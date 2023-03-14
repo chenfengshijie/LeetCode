@@ -6,8 +6,9 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_set>
+using std::min;
+using std::pair;
 using std::vector;
-
 // @lc code=start
 class Solution
 {
