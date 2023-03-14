@@ -40,11 +40,3 @@ int KMP(string s, string pattern)
     }
     return -1;
 }
-int main()
-{
-    string s = "1233212321";
-    string p = "2123";
-    auto ans = KMP(s, p);
-    printf("%d", ans);
-    return 0;
-}
