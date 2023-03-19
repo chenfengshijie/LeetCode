@@ -1,50 +1,44 @@
+#include <iostream>
 #include <vector>
-#include <string>
-using std::string;
+#include <algorithm>
+#include <bitset>
 using std::vector;
-// 求pattern的fail指针
+class Solution
+{
+public:
+    int beautifulSubsets(vector<int> &nums, int k)
+    {
+        int n = nums.size();
+        std::sort(nums.begin(), nums.end());
+        vector<int> res(n, 0);
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = i + 1; j < n; j++)
+                if (nums[j] - nums[i] == k)
+                    res[i] = res[i] | (1 << j);
+        }
+        int S = (1 << n);
+        int ans = 0;
+        for (int i = 1; i < S; i++)
+        {
+            if (check(i, res, n))
+                ++ans;
+        }
+        return ans;
+    }
 
-vector<int> prefix_function(string s)
-{
-    int n = (int)s.length();
-    vector<int> pi(n);
-    for (int i = 1; i < n; i++)
+private:
+    bool check(int S, vector<int> &res, int n)
     {
-        int j = pi[i - 1];
-        while (j > 0 && s[i] != s[j])
-            j = pi[j - 1];
-        if (s[i] == s[j])
-            j++;
-        pi[i] = j;
-    }
-    return pi;
-}
-int KMP(string s, string pattern)
-{
-    int n = s.length(), m = pattern.length();
-    auto fail = prefix_function(pattern);
-    int i = 0, j = 0;
-    for (i = 0; i < n; i++)
-    {
-        while (j > 0 && s[i] != pattern[j])
+        for (int i = 0; i < n; i++)
         {
-            j = fail[j - 1];
+            if (S & (1 << i))
+                if (S & res[i])
+                    return false;
         }
-        if (s[i] == pattern[j])
-            j++;
-        if (j == m)
-        {
-            // 输出答案，然后退出或者继续
-            return i - j + 1;
-        }
+        return true;
     }
-    return -1;
-}
+};
 int main()
 {
-    string s = "1233212321";
-    string p = "2123";
-    auto ans = KMP(s, p);
-    printf("%d", ans);
-    return 0;
 }
