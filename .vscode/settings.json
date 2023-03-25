@@ -4,5 +4,6 @@
         "vector": "cpp",
         "queue": "cpp",
         "utility": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/LuoGu"
 }
