@@ -55,5 +55,6 @@
     "xstddef": "cpp",
     "xtr1common": "cpp",
     "xutility": "cpp"
-  }
+  },
+  "cmake.sourceDirectory": "C:/Users/FrozeWorld/.leetcode/LeetCode"
 }
