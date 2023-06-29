@@ -4,7 +4,7 @@ project(template VERSION 0.1.0 LANGUAGES C CXX)
 include(CTest)
 enable_testing()
 
-add_executable(template 数独.cpp)
+add_executable(template main.cpp)
 
 set(C_STANDARD C11)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
