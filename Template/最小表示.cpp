@@ -19,7 +19,6 @@ int minmumRespresentation(char sec[], int n)
         }
     }
     i = min(i, j);
-    return i;
 }
 
 int main()

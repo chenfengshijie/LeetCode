@@ -55,5 +55,12 @@
     "xstddef": "cpp",
     "xtr1common": "cpp",
     "xutility": "cpp"
-  }
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none",
+  "cmake.configureOnOpen": true,
+  "cmake.debugConfig": {"externalConsole": true},
+  "editor.formatOnSave": true,
 }
