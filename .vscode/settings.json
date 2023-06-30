@@ -61,6 +61,6 @@
   },
   "python.formatting.provider": "none",
   "cmake.configureOnOpen": true,
-  "cmake.debugConfig": {"externalConsole": true},
-  "editor.formatOnSave": true,
+  "cmake.debugConfig": { "console": true },
+  "editor.formatOnSave": true
 }

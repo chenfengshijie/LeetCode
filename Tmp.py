@@ -1,4 +1,5 @@
 import re
+import os
 
 if __name__ == "__main__":
     directory = "F:\Movies\BBC猎捕.The.Hunt.2015.1080P.国语双语.中文字幕"
