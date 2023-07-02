@@ -108,7 +108,8 @@ private:
                 root = rotateLeft(root);
             }
         }
-        return;
+
+        return root;
     }
 
     // 删除节点
