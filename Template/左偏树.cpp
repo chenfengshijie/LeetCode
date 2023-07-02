@@ -164,16 +164,3 @@ private:
         }
     }
 };
-
-int main()
-{
-    LeftistTree<int> tree;
-    tree.insert(1);
-    auto s1 = tree.insert(2);
-    tree.insert(3);
-    printf("%d ", tree.top());
-    tree.pop();
-    tree.remove(s1);
-    printf("%d ", tree.top());
-    return 0;
-}
