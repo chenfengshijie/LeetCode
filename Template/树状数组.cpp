@@ -167,3 +167,7 @@ class BIT2D2
         add(x2 + 1, y2 + 1, z);
     }
 };
+
+int main()
+{
+}
