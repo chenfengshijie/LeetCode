@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class LCA
+class LCAMultiply
 {
 private:
     vector<vector<int>> parent; // parent[i][j] 表示节点 i 往上走 2^j 步所到达的祖先节点
@@ -82,4 +82,8 @@ public:
 
         return ans;
     }
+};
+
+class LCATarjan
+{
 };
