@@ -1,305 +1,79 @@
 #include <iostream>
-#include <cstdlib>
-#include <ctime>
-
-using namespace std;
-
-// 节点结构
-struct Node
-{
-    int key;      // 键值
-    int priority; // 优先级
-    int size;     // 子树大小
-    Node *left;   // 左子节点指针
-    Node *right;  // 右子节点指针
-
-    Node(int k)
-    {
-        key = k;
-        priority = rand(); // 生成随机优先级
-        size = 1;
-        left = nullptr;
-        right = nullptr;
-    }
-};
-
+#include <cstdio>
+#include <algorithm>
+#include <map>
+#include <vector>
 class PersistentTreap
 {
 private:
-    Node *root;
-
-    // 获取节点的大小（子树大小）
-    int getSize(Node *node)
+    struct TreapNode
     {
-        return (node != nullptr) ? node->size : 0;
-    }
-
-    // 更新节点的大小
-    void updateSize(Node *node)
+        int key, priority;
+        TreapNode *left, *right;
+        TreapNode(int k) : key(k), priority(std::rand()), left(nullptr), right(nullptr) {}
+    };
+    std::pair<TreapNode *, TreapNode *> split(TreapNode *node, const int key)
     {
-        if (node != nullptr)
+        if (!node)
+            return std::make_pair(nullptr, nullptr);
+        else
         {
-            node->size = getSize(node->left) + getSize(node->right) + 1;
+            TreapNode *newNode = new TreapNode(node->key);
+            newNode->priority = node->priority;
+            newNode->left = node->left;
+            newNode->right = node->right;
+            if (key < node->key)
+            {
+                std::pair<TreapNode *, TreapNode *> p = split(newNode->left, key);
+                newNode->left = p.second;
+                return std::make_pair(p.first, newNode);
+            }
+            else
+            {
+                std::pair<TreapNode *, TreapNode *> p = split(newNode->right, key);
+                newNode->right = p.first;
+                return std::make_pair(newNode, p.second);
+            }
         }
     }
-
-    // 分割树为两个子树
-    void split(Node *root, int key, Node *&left, Node *&right)
+    TreapNode *merge(TreapNode *u, TreapNode *v)
     {
-        if (root == nullptr)
+        if (!u)
+            return v;
+        if (!v)
+            return u;
+        if (u->priority > u->priority)
         {
-            left = nullptr;
-            right = nullptr;
-        }
-        else if (root->key <= key)
-        {
-            split(root->right, key, root->right, right);
-            left = root;
+            TreapNode *newNode = new TreapNode(u->key);
+            newNode->priority = u->priority;
+            newNode->left = u->left;
+            newNode->right = merge(u->right, v);
+            // 后续需要更新其他的数据在此使用update函数
+            return newNode;
         }
         else
         {
-            split(root->left, key, left, root->left);
-            right = root;
-        }
-        updateSize(root);
-    }
-
-    // 合并两个子树
-    Node *merge(Node *left, Node *right)
-    {
-        if (left == nullptr)
-        {
-            return right;
-        }
-        if (right == nullptr)
-        {
-            return left;
-        }
-        if (left->priority > right->priority)
-        {
-            left->right = merge(left->right, right);
-            updateSize(left);
-            return left;
-        }
-        else
-        {
-            right->left = merge(left, right->left);
-            updateSize(right);
-            return right;
-        }
-    }
-
-    // 插入节点
-    Node *insert(Node *root, Node *node)
-    {
-        if (root == nullptr)
-        {
-            return node;
-        }
-        if (node->priority > root->priority)
-        {
-            split(root, node->key, node->left, node->right);
-            updateSize(node);
-            return node;
-        }
-        if (node->key < root->key)
-        {
-            root->left = insert(root->left, node);
-        }
-        else
-        {
-            root->right = insert(root->right, node);
-        }
-        updateSize(root);
-        return root;
-    }
-
-    // 删除节点
-    Node *erase(Node *root, int key)
-    {
-        if (root == nullptr)
-        {
-            return nullptr;
-        }
-        if (root->key == key)
-        {
-            Node *temp = merge(root->left, root->right);
-            delete root;
-            return temp;
-        }
-        if (key < root->key)
-        {
-            root->left = erase(root->left, key);
-        }
-        else
-        {
-            root->right = erase(root->right, key);
-        }
-        updateSize(root);
-        return root;
-    }
-
-    // 查询节点
-    Node *search(Node *root, int key)
-    {
-        if (root == nullptr || root->key == key)
-        {
-            return root;
-        }
-        if (key < root->key)
-        {
-            return search(root->left, key);
-        }
-        else
-        {
-            return search(root->right, key);
-        }
-    }
-
-    // 查找前驱节点
-    Node *predecessor(Node *root, int key)
-    {
-        if (root == nullptr)
-        {
-            return nullptr;
-        }
-        if (root->key < key)
-        {
-            Node *pred = predecessor(root->right, key);
-            return (pred != nullptr) ? pred : root;
-        }
-        else
-        {
-            return predecessor(root->left, key);
-        }
-    }
-
-    // 查找后驱节点
-    Node *successor(Node *root, int key)
-    {
-        if (root == nullptr)
-        {
-            return nullptr;
-        }
-        if (root->key > key)
-        {
-            Node *succ = successor(root->left, key);
-            return (succ != nullptr) ? succ : root;
-        }
-        else
-        {
-            return successor(root->right, key);
+            TreapNode *newNode = new TreapNode(v->key);
+            newNode->priority = v->priority;
+            newNode->right = v->right;
+            newNode->left = merge(u, v->left);
+            // 后续需要更新其他的数据在此使用update函数
+            return newNode;
         }
     }
 
 public:
-    PersistentTreap()
+    std::vector<TreapNode *> root;
+    void insert(TreapNode *&node, int key)
     {
-        root = nullptr;
+        std::pair<TreapNode *, TreapNode *> p = split(node, key);
+        node = merge(merge(p.first, new TreapNode(key)), p.second);
     }
-
-    // 插入节点
-    void insert(int key)
+    void remove(TreapNode *&node, int key)
     {
-        root = insert(root, new Node(key));
-    }
-
-    // 删除节点
-    void erase(int key)
-    {
-        root = erase(root, key);
-    }
-
-    // 查询节点
-    Node *search(int key)
-    {
-        return search(root, key);
-    }
-
-    // 查询前驱节点
-    Node *getPredecessor(int key)
-    {
-        return predecessor(root, key);
-    }
-
-    // 查询后驱节点
-    Node *getSuccessor(int key)
-    {
-        return successor(root, key);
-    }
-
-    // 打印树中的节点
-    void printTree(Node *root)
-    {
-        if (root != nullptr)
-        {
-            printTree(root->left);
-            cout << "Key: " << root->key << ", Priority: " << root->priority << endl;
-            printTree(root->right);
-        }
-    }
-
-    void printTree()
-    {
-        cout << "Current Tree:" << endl;
-        printTree(root);
+        std::pair<TreapNode *, TreapNode *> p = split(node, key);
+        std::pair<TreapNode *, TreapNode *> q = split(p.first, key - 1);
+        delete q.second;
+        node = merge(q.first, p.second);
     }
 };
-
-int main()
-{
-    srand(time(nullptr));
-
-    PersistentTreap treap;
-
-    // 插入节点
-    treap.insert(5);
-    treap.insert(3);
-    treap.insert(7);
-    treap.insert(1);
-    treap.insert(4);
-
-    // 打印当前树
-    treap.printTree();
-
-    // 查询节点
-    Node *searchNode = treap.search(3);
-    if (searchNode != nullptr)
-    {
-        cout << "Node found: Key = " << searchNode->key << ", Priority = " << searchNode->priority << endl;
-    }
-    else
-    {
-        cout << "Node not found." << endl;
-    }
-
-    // 查询前驱节点
-    Node *predecessor = treap.getPredecessor(5);
-    if (predecessor != nullptr)
-    {
-        cout << "Predecessor found: Key = " << predecessor->key << ", Priority = " << predecessor->priority << endl;
-    }
-    else
-    {
-        cout << "Predecessor not found." << endl;
-    }
-
-    // 查询后驱节点
-    Node *successor = treap.getSuccessor(5);
-    if (successor != nullptr)
-    {
-        cout << "Successor found: Key = " << successor->key << ", Priority = " << successor->priority << endl;
-    }
-    else
-    {
-        cout << "Successor not found." << endl;
-    }
-
-    // 删除节点
-    treap.erase(3);
-
-    // 打印修改后的树
-    treap.printTree();
-
-    return 0;
-}
