@@ -1,6 +1,5 @@
 #include <iostream>
-#include <cstdlib>
-
+#include <cstdio>
 using namespace std;
 
 ///! 基于旋转的Treap实现
