@@ -40,4 +40,4 @@ build/
 .vscode
 
 main.cpp
-tmp*
+tmp*.*
