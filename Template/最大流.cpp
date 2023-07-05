@@ -330,8 +330,115 @@ public:
         flow[edge_count] = 0;
         edge_count++;
     }
+    HLPP()
+    {
+        memset(head, -1, sizeof(head));
+        memset(next, -1, sizeof(next));
+        memset(cap, 0, sizeof(cap));
+        memset(to, 0, sizeof(to));
+        memset(flow, 0, sizeof(flow));
+    }
+    bool bfs_init()
+    {
+        memset(height, 0x3f, sizeof(height));
+        std::queue<int> q;
+        q.push(t);
+        height[t] = 0;
+        while (!q.empty())
+        {
+            int u = q.front();
+            q.pop();
+            for (int i = head[u]; i != -1; i = next[i])
+            {
+                int v = to[i];
+                if (height[v] == 0x3f3f3f3f && cap[i ^ 1] > 0)
+                {
+                    height[v] = height[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+        return height[s] <= n;
+    }
+
+    int push(int u)
+    {
+        const int INF = 0x3f3f3f3f; // 尽可能通过能够推送的边推送超额流
+        bool init = (u == s);       // 是否在初始化
+        for (int i = head[u]; i != -1; i = next[i])
+        {
+            const int v = to[i], w = cap[i] - flow[i];
+            if (!w || (init == false && height[u] != height[v] + 1) ||
+                height[u] == INF) // 初始化时不考虑高度差为1
+                continue;
+            long long k = init ? w : std::min(1ll * w, ex[u]);
+            // 取到剩余容量和超额流的最小值，初始化时可以使源的溢出量为负数。
+            if (v != s && v != t && !ex[v])
+                B[height[v]].push(v), level = std::max(level, height[v]);
+            ex[u] -= k, ex[v] += k, flow[i] += k, flow[i ^ 1] -= k; // push
+            if (!ex[u])
+                return 0; // 如果已经推送完就返回
+        }
+        return 1;
+    }
+    void relabel(int u)
+    { // 重贴标签（高度）
+        height[u] = 0x3f3f3f3f;
+        for (int i = head[u]; i != -1; i = next[i])
+            if (cap[i] > flow[i])
+                height[u] = std::min(height[u], height[to[i]]);
+        if (++height[u] < n)
+        { // 只处理高度小于 n 的节点
+            B[height[u]].push(u);
+            level = std::max(level, height[u]);
+            ++gap[height[u]]; // 新的高度，更新 gap
+        }
+    }
+    int select()
+    {
+        while (B[level].size() == 0 && level > -1)
+            level--;
+        return level == -1 ? -1 : B[level].top();
+    }
+    long long maxflow()
+    {
+        if (!bfs_init())
+            return 0;
+        memset(gap, 0, sizeof(gap));
+        for (int i = 1; i <= n; i++)
+            if (height[i] != 0x3f3f3f3f)
+            {
+                gap[height[i]]++;
+            }
+
+        height[s] = n;
+        push(s);
+        int u;
+        while ((u = select()) != -1)
+        {
+            B[level].pop();
+            // 删除不与t联通的点
+            if (height[u] > n)
+                continue;
+            if (push(u))
+            {
+                --gap[height[u]];
+                if (!gap[height[u]])
+                {
+                    for (int i = 1; i <= n; i++)
+                        if (i != s && i != t && height[i] > height[u] && height[i] < n + 1)
+                        {
+                            height[i] = n + 1;
+                            --gap[height[i]];
+                        }
+                }
+                relabel(u);
+            }
+        }
+        return ex[t];
+    }
 };
-DINIC hlpp;
+HLPP hlpp;
 int main()
 {
 
