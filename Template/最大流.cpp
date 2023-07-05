@@ -309,6 +309,59 @@ class ISAP
 
 ///! 基于推送重贴标签的预流推进算法
 
+class HLPP
+{
+public:
+    int n, m, s, t;
+    static const int maxn = 10009;
+    // 存图
+    int head[maxn], next[maxn], to[maxn], cap[maxn], flow[maxn];
+    int edge_count = 0;
+
+    // 预流
+    int height[maxn], excess[maxn], gap[maxn];
+    void add_edge(int u, int v, int cap1)
+    {
+        to[edge_count] = v;
+        next[edge_count] = head[u];
+        head[u] = edge_count;
+        cap[edge_count] = cap1;
+        edge_count++;
+    }
+    // bfs 优化:初始化 h(u) 为 u 到 t 的最短距离；特别地，h(s)=n
+    bool bfs_init()
+    {
+        memset(height, 0x3f, sizeof(height));
+        height[t] = 0;
+        std::queue<int> q;
+        q.push(t);
+        while (!q.empty()) // 反向BFS
+        {
+            int u = q.front();
+            q.pop();
+            for (int i = head[u]; i != -1; i = next[i])
+            {
+                int v = to[i];
+                if (height[v] == 0x3f3f3f3f && cap[i ^ 1] > 0)
+                {
+                    height[v] = height[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+        return height[s] != 0x3f3f3f3f;
+    }
+
+    // push 操作
+    void push(int u)
+    {
+        bool init = u == s;
+        for (int i = head[u]; i != -1; i = next[i])
+        {
+        }
+    }
+};
+
 int main()
 {
     DINIC dinic;
