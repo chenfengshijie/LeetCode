@@ -40,5 +40,4 @@ build/
 .vscode
 
 main.cpp
-tmp*.*
-input.*
+tmp*.

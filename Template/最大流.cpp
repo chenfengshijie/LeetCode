@@ -1,3 +1,4 @@
+#include <stack>
 #include <iostream>
 #include <cstdio>
 #include <queue>
@@ -312,30 +313,38 @@ class ISAP
 class HLPP
 {
 public:
+    static const int MAXN = 100009;
+    int head[MAXN], next[MAXN], to[MAXN], cap[MAXN], flow[MAXN];
+    long long ex[MAXN], edge_count = 0;
     int n, m, s, t;
-    static const int maxn = 10009;
-    // 存图
-    int head[maxn], next[maxn], to[maxn], cap[maxn], flow[maxn];
-    int edge_count = 0;
+    int height[MAXN], gap[MAXN], cur[MAXN];
+    int level = 0; // 溢出节点的最高高度
+    std::stack<int> B[MAXN];
 
-    // 预流
-    int height[maxn], excess[maxn], gap[maxn];
     void add_edge(int u, int v, int cap1)
     {
-        to[edge_count] = v;
         next[edge_count] = head[u];
         head[u] = edge_count;
+        to[edge_count] = v;
         cap[edge_count] = cap1;
+        flow[edge_count] = 0;
         edge_count++;
     }
-    // bfs 优化:初始化 h(u) 为 u 到 t 的最短距离；特别地，h(s)=n
+    HLPP()
+    {
+        memset(head, -1, sizeof(head));
+        memset(next, -1, sizeof(next));
+        memset(cap, 0, sizeof(cap));
+        memset(to, 0, sizeof(to));
+        memset(flow, 0, sizeof(flow));
+    }
     bool bfs_init()
     {
         memset(height, 0x3f, sizeof(height));
-        height[t] = 0;
         std::queue<int> q;
         q.push(t);
-        while (!q.empty()) // 反向BFS
+        height[t] = 0;
+        while (!q.empty())
         {
             int u = q.front();
             q.pop();
@@ -349,30 +358,98 @@ public:
                 }
             }
         }
-        return height[s] != 0x3f3f3f3f;
+        return height[s] <= n;
     }
 
-    // push 操作
-    void push(int u)
+    int push(int u)
     {
-        bool init = u == s;
+        const int INF = 0x3f3f3f3f; // 尽可能通过能够推送的边推送超额流
+        bool init = (u == s);       // 是否在初始化
         for (int i = head[u]; i != -1; i = next[i])
         {
+            const int v = to[i], w = cap[i] - flow[i];
+            if (!w || (init == false && height[u] != height[v] + 1) ||
+                height[u] == INF) // 初始化时不考虑高度差为1
+                continue;
+            long long k = init ? w : std::min(1ll * w, ex[u]);
+            // 取到剩余容量和超额流的最小值，初始化时可以使源的溢出量为负数。
+            if (v != s && v != t && !ex[v])
+                B[height[v]].push(v), level = std::max(level, height[v]);
+            ex[u] -= k, ex[v] += k, flow[i] += k, flow[i ^ 1] -= k; // push
+            if (!ex[u])
+                return 0; // 如果已经推送完就返回
+        }
+        return 1;
+    }
+    void relabel(int u)
+    { // 重贴标签（高度）
+        height[u] = 0x3f3f3f3f;
+        for (int i = head[u]; i != -1; i = next[i])
+            if (cap[i] > flow[i])
+                height[u] = std::min(height[u], height[to[i]]);
+        if (++height[u] < n)
+        { // 只处理高度小于 n 的节点
+            B[height[u]].push(u);
+            level = std::max(level, height[u]);
+            ++gap[height[u]]; // 新的高度，更新 gap
         }
     }
-};
+    int select()
+    {
+        while (B[level].size() == 0 && level > -1)
+            level--;
+        return level == -1 ? -1 : B[level].top();
+    }
+    long long maxflow()
+    {
+        if (!bfs_init())
+            return 0;
+        memset(gap, 0, sizeof(gap));
+        for (int i = 1; i <= n; i++)
+            if (height[i] != 0x3f3f3f3f)
+            {
+                gap[height[i]]++;
+            }
 
+        height[s] = n;
+        push(s);
+        int u;
+        while ((u = select()) != -1)
+        {
+            B[level].pop();
+            // 删除不与t联通的点
+            if (height[u] > n)
+                continue;
+            if (push(u))
+            {
+                --gap[height[u]];
+                if (!gap[height[u]])
+                {
+                    for (int i = 1; i <= n; i++)
+                        if (i != s && i != t && height[i] > height[u] && height[i] < n + 1)
+                        {
+                            height[i] = n + 1;
+                            --gap[height[i]];
+                        }
+                }
+                relabel(u);
+            }
+        }
+        return ex[t];
+    }
+};
+HLPP hlpp;
 int main()
 {
-    DINIC dinic;
-    scanf("%d%d%d%d", &dinic.n, &dinic.m, &dinic.s, &dinic.t);
-    for (int i = 0; i < dinic.m; i++)
+
+    scanf("%d%d%d%d", &hlpp.n, &hlpp.m, &hlpp.s, &hlpp.t);
+    for (int i = 0; i < hlpp.m; i++)
     {
         int u, v, cap;
         scanf("%d%d%d", &u, &v, &cap);
-        dinic.add_edge(u, v, cap);
-        dinic.add_edge(v, u, 0);
+        hlpp.add_edge(u, v, cap);
+        hlpp.add_edge(v, u, 0);
     }
-    printf("%lld\n", dinic.maxflow());
+    printf("%lld\n", hlpp.maxflow());
     return 0;
 }
