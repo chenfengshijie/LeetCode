@@ -7,7 +7,7 @@ enable_testing()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-add_executable(template main.cpp)
+add_executable(template main2.cpp)
 
 set(C_STANDARD C11)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

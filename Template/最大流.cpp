@@ -1,3 +1,4 @@
+#include <stack>
 #include <iostream>
 #include <cstdio>
 #include <queue>
@@ -309,17 +310,39 @@ class ISAP
 
 ///! 基于推送重贴标签的预流推进算法
 
+class HLPP
+{
+public:
+    static const int MAXN = 100009;
+    int head[MAXN], next[MAXN], to[MAXN], cap[MAXN], flow[MAXN];
+    long long ex[MAXN], edge_count = 0;
+    int n, m, s, t;
+    int height[MAXN], gap[MAXN], cur[MAXN];
+    int level = 0; // 溢出节点的最高高度
+    std::stack<int> B[MAXN];
+
+    void add_edge(int u, int v, int cap1)
+    {
+        next[edge_count] = head[u];
+        head[u] = edge_count;
+        to[edge_count] = v;
+        cap[edge_count] = cap1;
+        flow[edge_count] = 0;
+        edge_count++;
+    }
+};
+DINIC hlpp;
 int main()
 {
-    DINIC dinic;
-    scanf("%d%d%d%d", &dinic.n, &dinic.m, &dinic.s, &dinic.t);
-    for (int i = 0; i < dinic.m; i++)
+
+    scanf("%d%d%d%d", &hlpp.n, &hlpp.m, &hlpp.s, &hlpp.t);
+    for (int i = 0; i < hlpp.m; i++)
     {
         int u, v, cap;
         scanf("%d%d%d", &u, &v, &cap);
-        dinic.add_edge(u, v, cap);
-        dinic.add_edge(v, u, 0);
+        hlpp.add_edge(u, v, cap);
+        hlpp.add_edge(v, u, 0);
     }
-    printf("%lld\n", dinic.maxflow());
+    printf("%lld\n", hlpp.maxflow());
     return 0;
 }
