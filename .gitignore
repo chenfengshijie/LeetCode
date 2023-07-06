@@ -38,3 +38,5 @@ build/
 /build
 /.vscode
 .vscode
+
+main.cpp
