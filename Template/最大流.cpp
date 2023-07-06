@@ -153,7 +153,7 @@ public:
                     flow[i ^ 1] -= tmp;
                     ans += tmp;
                     current_flow -= tmp;
-                    if (current_flow == ans)
+                    if (current_flow == 0)
                         break;
                 }
             }
