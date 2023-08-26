@@ -56,16 +56,13 @@
     "xtr1common": "cpp",
     "xutility": "cpp"
   },
-<<<<<<< HEAD
-  "cmake.sourceDirectory": "C:/Users/FrozeWorld/.leetcode/LeetCode"
-}
-=======
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "python.formatting.provider": "none",
   "cmake.configureOnOpen": true,
-  "cmake.debugConfig": {"console": "integratedTerminal"},
+  "cmake.debugConfig": {
+    "console": "integratedTerminal"
+  },
   "editor.formatOnSave": true
 }
->>>>>>> 7fb415192ff878ea7b169c8c6ee6aac95ec18839
