@@ -36,8 +36,7 @@ build/
 
 .vscode
 /build
-/.vscode
-.vscode
 
 main.cpp
 tmp*.
+input.txt
