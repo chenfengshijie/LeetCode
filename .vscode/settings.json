@@ -59,7 +59,9 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "python.formatting.provider": "none",
+  "workbench.editorAssociations": {
+    "*.md": "default"
+  },
   "cmake.configureOnOpen": true,
   "cmake.debugConfig": {
     "console": "integratedTerminal"

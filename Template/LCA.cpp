@@ -150,8 +150,6 @@ class LCATarjan
             }
         }
     }
-
-public:
 };
 
 class LCARMQ
