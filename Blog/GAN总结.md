@@ -132,3 +132,25 @@ $$
 
 ## cycleGAN:Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks
 
+主要是引入了循环一致性loss
+
+CycleGAN使用了两个generator,$G_{A\rightarrow B},G_{B \rightarrow A}$,并在其中GAN loss的基础上加入了循环一致性额外两种loss
+
+- 循环一致性loss,要求$A$风格的图片经过两次变换之后还是$A$,即$G_{B\rightarrow A}(G_{A \rightarrow B}(A)) \approx A$,即要求$G_{A \rightarrow B},G_{B \rightarrow A}$是互为逆变换的，这样可以使得生成的图片更加真实。
+- identity loss,要求$G_{A\rightarrow B}(B) \approx B$,$G_{B\rightarrow A}(A) \approx A$,即要求$G_{A\rightarrow B},G_{B\rightarrow A}$是恒等变换，要求网络能够理解整体的风格，而不是对于局部进行变换。
+- GAN Loss: $G_{A\rightarrow B},G_{B\rightarrow A}$的GAN loss.
+
+最终的loss如下:
+$$
+\begin{aligned}\mathcal{L}_{GAN}(G_{A\rightarrow B},D_B,&A,B)+\mathcal{L}_{GAN}(G_{B\rightarrow A},D_A,A,B)\\&+\lambda\mathcal{L}_{cyc}(G_{A\rightarrow B},G_{B\rightarrow A})+\lambda\mathcal{L}_{idt}(G_{A\rightarrow B},G_{B\rightarrow A})\end{aligned}
+$$
+![CycleGAN](https://img-blog.csdnimg.cn/20210714055203996.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80NjI3NDE2OA==,size_16,color_FFFFFF,t_70)
+
+
+## Softmax GAN
+
+将最终的GANloss换成了softmax loss,discriminator的目标是为真实样本输出 $\frac{1}{N}$，N为batch_size,为生成样本输出0，generator的目标是使得生成的样本也能够输出$\frac{1}{N}$.这样的话，就可以避免GAN中的梯度消失问题，因为GAN中的梯度消失问题是由于判别器的输出是sigmoid函数，当判别器的输出接近于0或者1的时候，梯度就会消失，而softmax函数的梯度是不会消失的。
+
+## StarGAN:Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation
+
+StarGAN是一种多域图像到图像的翻译模型，它可以将一张图像翻译成多种风格的图像，例如将一张人脸图像翻译成不同的发色、不同的性别、不同的年龄等。StarGAN的主要创新点有：
