@@ -54,12 +54,23 @@
     "xmemory": "cpp",
     "xstddef": "cpp",
     "xtr1common": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "locale": "cpp",
+    "map": "cpp",
+    "regex": "cpp",
+    "stack": "cpp",
+    "xlocbuf": "cpp",
+    "xlocmes": "cpp",
+    "xlocmon": "cpp",
+    "xloctime": "cpp",
+    "xtree": "cpp"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "python.formatting.provider": "none",
+  "workbench.editorAssociations": {
+    "*.md": "default"
+  },
   "cmake.configureOnOpen": true,
   "cmake.debugConfig": {
     "console": "integratedTerminal"
